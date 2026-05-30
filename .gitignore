@@ -11,9 +11,17 @@ coverage/
 .claude/
 .planning/
 
+# Next.js build output
+.next/
+out/
+
 # Action bundle sourcemap — not committed (machine-dependent, not needed at runtime)
 dist/index.js.map
 
 # Benchmark fixtures (cached API data — reproducible via scrape)
 bench/fixtures/*/
 !bench/fixtures/.gitkeep
+
+# Local-only scripts (never pushed)
+start.ps1
+push-layered-history.ps1

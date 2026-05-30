@@ -7,7 +7,7 @@
 
 - [x] Public GitHub repo with source
 - [ ] Live Vercel deploy (root `vercel.json`, build `pnpm --filter slop-detector-web build`)
-- [ ] 2–3 minute demo video (Live Fire PR → SSE → verdict → one honest FN)
+- [ ] 2–3 minute demo video (Live Fire PR → SSE → verdict → one honest FN) — script: [`VIDEO_SCRIPT.md`](VIDEO_SCRIPT.md)
 - [ ] Hackathon form: disclose tools used (e.g. Cursor)
 
 ## What to demo (3 minutes)

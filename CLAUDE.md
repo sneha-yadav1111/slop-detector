@@ -33,7 +33,7 @@ For every new **issue**, the Action posts a repo-aware missing-info checklist. F
 | Action runtime | **JavaScript (Node 24) Action** | HIGH |
 | Language | **TypeScript 5.9** compiled + bundled to `dist/index.js` via **Rollup 4** | HIGH |
 | Bundler | **Rollup 4** + `@rollup/plugin-typescript` (Action bundle) | HIGH |
-| Dashboard | **Next.js 15** (`web/`, pnpm workspace) | HIGH |
+| Dashboard | **Next.js 15** (`dashboard/`, pnpm workspace) | HIGH |
 | HTTP / GitHub API | **`@actions/github` 9.x** (Action); **`@octokit/rest`** (dashboard live fetch) | HIGH |
 | Inputs/outputs/logging | **`@actions/core` 3.x** | HIGH |
 | LLM SDK | **`@anthropic-ai/sdk` 0.96.x** primary; **`openai` 6.x** secondary; OpenRouter/Gemini in dashboard | HIGH |
@@ -197,7 +197,7 @@ For every new **issue**, the Action posts a repo-aware missing-info checklist. F
 - **Single engine** — Action, dashboard, and benchmarks call the same entrypoints: `score()`, `scorePr()`, `scanComments()`, `analyze()`.
 - **Hero invariant** — checklist comments post before labels; LLM/summary/ingest failures never block comments.
 - **Idempotency** — comments use hidden marker `<!-- slop-detector:v1 -->`; skip label `slop-detector-ignore`.
-- **Branding** — package `slop-detector`, web `slop-detector-web`, env prefix `SLOP_DETECTOR_*`.
+- **Branding** — package `slop-detector`, dashboard package `slop-detector-web` (`dashboard/`), env prefix `SLOP_DETECTOR_*`.
 - **Tooling** — Biome for lint/format; Vitest with mocked `@actions/*` in Action tests; Rollup bundles `dist/index.js`.
 - **PR gray zone** — LLM adjudication for PR scores 3–6; issue gray zone 4–6 (questions use narrower band).
 - **Bench honesty** — disclose programmatic fixture expansion in `dataset.json` `_meta`; report false negatives explicitly.
@@ -224,9 +224,9 @@ issues.opened / pull_request ──► src/action/main.ts
                    src/core/
          score() · scorePr() · scanComments() · analyze()
                           ▲
-              web/src/lib/scan.ts + github.ts (SSE /api/scan/stream)
+              dashboard/src/lib/scan.ts + github.ts (SSE /api/scan/stream)
                           │
-                   Next.js dashboard (web/)
+                   Next.js dashboard (dashboard/)
 ```
 
 | Path | Role |
