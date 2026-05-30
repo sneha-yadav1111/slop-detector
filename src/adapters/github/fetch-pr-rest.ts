@@ -1,4 +1,4 @@
-// Token-based GitHub REST fetch for web/dashboard (native fetch).
+// Token-based GitHub REST fetch for the dashboard (native fetch).
 
 import { mapToPullRequestInput, type RawPrFile, type RawPrPayload } from './map-pr.js'
 import type { PullRequestInput } from '../../core/pr/types.js'
