@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --signal-bg: #020818;
+    --signal-surface: #060f24;
+    --signal-surface-2: #0a1735;
+    --signal-border: #0d2347;
+    --signal-border-hot: rgba(0, 229, 255, 0.2);
+    --signal-cyan: #00E5FF;
+    --signal-cyan-dim: #00b8cc;
+    --signal-cyan-glow: rgba(0, 229, 255, 0.33);
+    --signal-red: #FF1744;
+    --signal-red-dim: #cc1236;
+    --signal-red-glow: rgba(255, 23, 68, 0.33);
+    --signal-amber: #FFB300;
+    --signal-amber-dim: #cc8f00;
+    --signal-amber-glow: rgba(255, 179, 0, 0.33);
+    --signal-white: #F0F4F8;
+    --signal-text-dim: #7a93b8;
+    --signal-text-mute: #3a5070;
+    --signal-grid: rgba(13, 35, 71, 0.07);
+  }
+
+  * {
+    @apply border-signal-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--signal-bg);
+    color: var(--signal-white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    background-image: radial-gradient(circle, rgba(0, 229, 255, 0.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--signal-cyan), transparent);
+    z-index: 9999;
+    opacity: 0.6;
+  }
+}
+
+@layer utilities {
+  /* Corner bracket pseudo-element card */
+  .bracket-card {
+    position: relative;
+  }
+  .bracket-card::before,
+  .bracket-card::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-color: rgba(0, 229, 255, 0.5);
+    border-style: solid;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .bracket-card::before {
+    top: 8px;
+    left: 8px;
+    border-width: 1px 0 0 1px;
+  }
+  .bracket-card::after {
+    bottom: 8px;
+    right: 8px;
+    border-width: 0 1px 1px 0;
+  }
+
+  /* Animated scan sweep line */
+  .scan-sweep {
+    position: relative;
+    overflow: hidden;
+  }
+  .scan-sweep::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--signal-cyan) 50%, transparent 100%);
+    animation: signal-sweep 3s linear infinite;
+    z-index: 10;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  /* Hexagonal clip-path icon container */
+  .hex-icon {
+    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* Verdict text utilities */
+  .verdict-clean { color: var(--signal-cyan); }
+  .verdict-slop { color: var(--signal-red); }
+  .verdict-gray { color: var(--signal-amber); }
+
+  /* Mount animation stagger delays */
+  .stagger-1 { animation-delay: 50ms; }
+  .stagger-2 { animation-delay: 100ms; }
+  .stagger-3 { animation-delay: 150ms; }
+  .stagger-4 { animation-delay: 200ms; }
+  .stagger-5 { animation-delay: 250ms; }
+  .stagger-6 { animation-delay: 300ms; }
+  .stagger-7 { animation-delay: 400ms; }
+  .stagger-8 { animation-delay: 500ms; }
+
+  /* Backwards compat aliases — map old utility names so unconverted components don't crash */
+  .animate-in-up {
+    animation: signal-mount 0.4s ease forwards;
+    opacity: 0;
+  }
+  .animate-fade-in {
+    animation: signal-mount 0.4s ease forwards;
+    opacity: 0;
+  }
+}
+
+@layer base {
+  @keyframes signal-sweep {
+    from { top: -2px; }
+    to   { top: 100%; }
+  }
+
+  @keyframes signal-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+
+  @keyframes signal-mount {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes signal-flicker {
+    0%, 100% { opacity: 0.94; }
+    50%       { opacity: 0.92; }
+    75%       { opacity: 0.94; }
+  }
+
+  @keyframes score-fill {
+    from { stroke-dashoffset: 100; }
+    to   { stroke-dashoffset: 0; }
+  }
+
+  @keyframes bracket-grow {
+    from { width: 0; height: 0; }
+    to   { width: 12px; height: 12px; }
+  }
+
+  /* Keep accordion keyframes for shadcn compatibility */
+  @keyframes accordion-down {
+    from { height: 0; }
+    to   { height: var(--radix-accordion-content-height); }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to   { height: 0; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
