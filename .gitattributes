@@ -1,0 +1,17 @@
+# Force LF line endings for all text files on every platform.
+# Without this, Windows checkouts (core.autocrlf=true) produce CRLF source
+# files, and Rollup bakes that CRLF into dist/index.js.map's sourcesContent.
+# The Linux CI runner checks out LF, rebuilds an LF map, and the committed
+# CRLF map no longer matches -> the "Verify dist/index.js" CI step fails.
+* text=auto eol=lf
+
+# The committed Action bundle must always be LF (Rollup emits LF everywhere).
+dist/index.js text eol=lf
+dist/index.js.map text eol=lf
+
+# Binary assets must never be line-ending normalized.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary

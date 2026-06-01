@@ -1,0 +1,19 @@
+node_modules/
+build/
+coverage/
+.env
+.env.local
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.tsbuildinfo
+.claude/
+.planning/
+
+# Action bundle sourcemap — not committed (machine-dependent, not needed at runtime)
+dist/index.js.map
+
+# Benchmark fixtures (cached API data — reproducible via scrape)
+bench/fixtures/*/
+!bench/fixtures/.gitkeep

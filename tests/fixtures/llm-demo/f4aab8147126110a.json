@@ -1,0 +1,9 @@
+{
+  "score": 8,
+  "rationale": "DEMO: clear bug report with version info but missing minimal repro and stack trace.",
+  "missing": [
+    "Share a minimal standalone reproducer (project, file, or steps from a fresh workspace)",
+    "Paste the full stack trace or error output from the crash",
+    "Confirm the OS and Node version where this reproduces"
+  ]
+}

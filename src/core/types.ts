@@ -1,0 +1,63 @@
+// Phase 1 DTOs — locked in SKELETON.md section A6.
+// DO NOT add fields without updating SKELETON.md and notifying downstream phases.
+// Phase 2+ may EXTEND these types, but Phase 1 plans MUST NOT change their shape.
+
+export interface Issue {
+  title: string
+  body: string
+  labels: string[]
+}
+
+export interface Signals {
+  hasCodeBlock: boolean
+  hasStackTrace: boolean
+  hasVersionMention: boolean
+  hasReproKeywords: boolean
+  hasExpectedActual: boolean
+  hasMinimalExample: boolean
+  hasImageOnly: boolean
+}
+
+export type IssueType = 'bug' | 'feature' | 'question'
+
+export interface RepoContext {
+  hasIssueForms: boolean
+  hasMdTemplates: boolean
+  hasContributing: boolean
+  templates: ParsedTemplate[]
+  // Phase 4 (CHECK-05): pre-extracted Tier-3 checklist items from CONTRIBUTING.md.
+  // Populated by src/adapters/github/templates.ts when Tier-3 conditions hold.
+  // Read by src/core/checklist/strategies/tier3.ts (pure — no LLM call in strategy).
+  tier3Items?: ChecklistItem[]
+}
+
+// Phase 2 (CHECK-03 / CHECK-04): typed output of the templates adapter.
+// Produced by src/adapters/github/templates.ts; consumed by Tier 1 / Tier 2 strategies in src/core/.
+export interface ParsedTemplate {
+  filename: string
+  type: 'form' | 'md'
+  fields: string[]
+}
+
+export interface ChecklistItem {
+  text: string
+  signalKey?: keyof Signals
+}
+
+export interface ScoredIssue {
+  score: number
+  missing: string[]
+  signals: Signals
+  issueType: IssueType
+  isGrayZone: boolean
+  items: ChecklistItem[]
+  tierUsed: string
+}
+
+// Strategy chain interface (CHECK-01). Phase 1: only BaselineStrategy implements this.
+// Phase 2 adds IssueFormStrategy, TemplateMdStrategy. Phase 4 adds ContributingStrategy.
+export interface ChecklistStrategy {
+  name: string
+  applies(ctx: RepoContext): boolean
+  generate(type: IssueType, signals: Signals, ctx?: RepoContext): ChecklistItem[]
+}

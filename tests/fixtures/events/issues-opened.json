@@ -1,0 +1,19 @@
+{
+  "action": "opened",
+  "issue": {
+    "number": 1,
+    "title": "App crashes on login",
+    "body": "I get an error when I click the login button. Please fix.",
+    "state": "open",
+    "labels": [],
+    "user": { "login": "sneha-yadav1111", "type": "User", "id": 1 }
+  },
+  "repository": {
+    "id": 1,
+    "name": "slop-detector-sandbox",
+    "full_name": "sneha-yadav1111/slop-detector-sandbox",
+    "owner": { "login": "sneha-yadav1111", "type": "User", "id": 1 },
+    "private": false
+  },
+  "sender": { "login": "sneha-yadav1111", "type": "User", "id": 1 }
+}

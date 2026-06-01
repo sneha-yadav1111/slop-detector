@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+      - name: Install (workspace)
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm lint
+      - name: Test (core + adapters + action)
+        run: pnpm test
+      - name: Expand PR benchmark dataset
+        run: pnpm bench:expand-pr
+      - name: Bake-Off benchmark (Track A confusion matrix)
+        run: pnpm bench:pr
+      - name: Assert PR benchmark metrics
+        run: node scripts/assert-bench-metrics.js --min-f1 0.75 --max-fpr 0.15
+      - name: Build dist/
+        run: pnpm package
+      - name: Verify dist/index.js is committed and up to date
+        run: |
+          git diff --exit-code dist/index.js || (echo "ERROR: dist/index.js is stale — run 'pnpm package' and commit." && exit 1)
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+      - name: Install (workspace)
+        run: pnpm install --frozen-lockfile
+      - name: Build dashboard (same command Vercel runs)
+        run: pnpm --filter slop-detector-web build

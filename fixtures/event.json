@@ -1,0 +1,27 @@
+{
+  "action": "opened",
+  "issue": {
+    "number": 1,
+    "title": "bug",
+    "body": "",
+    "labels": [],
+    "user": {
+      "login": "test-user",
+      "type": "User"
+    },
+    "state": "open",
+    "created_at": "2026-05-09T00:00:00Z",
+    "updated_at": "2026-05-09T00:00:00Z"
+  },
+  "repository": {
+    "name": "Slop Detector",
+    "owner": {
+      "login": "sneha-yadav1111"
+    },
+    "full_name": "sneha-yadav1111/slop-scan"
+  },
+  "sender": {
+    "login": "test-user",
+    "type": "User"
+  }
+}

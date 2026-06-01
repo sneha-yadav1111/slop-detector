@@ -1,0 +1,1559 @@
+{
+  "_meta": {
+    "description": "Curated + programmatic expansion (honest disclosure). Original hand-labeled cases plus generated templates for scale.",
+    "rubric": {
+      "slop": "Restates the diff / says nothing a reviewer couldn't read from the code; generic filler commits; comments that paraphrase the next line or are generic 'This function...' boilerplate.",
+      "genuine": "Explains WHY, names risks/edge cases/constraints, references issues, documents testing — information not derivable from the diff alone."
+    },
+    "kinds": [
+      "pr",
+      "commit",
+      "comments"
+    ],
+    "humanLabeledCount": 13,
+    "generatedCount": 74
+  },
+  "items": [
+    {
+      "id": "pr-slop-01",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Classic AI PR: opener + file-list bullets, no why/testing.",
+      "pr": {
+        "title": "Update files",
+        "body": "This PR introduces the following changes:\n\n- Updated `userService.ts`\n- Modified `authController.ts`\n- Refactored `helpers.ts`\n\nThese changes improve the codebase and enhance maintainability.",
+        "changedFiles": [
+          "src/userService.ts",
+          "src/authController.ts",
+          "src/helpers.ts"
+        ],
+        "changedFileCount": 3,
+        "linesChanged": 140,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "pr-slop-02",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Thin body for a large change; restates filenames.",
+      "pr": {
+        "title": "Refactor code",
+        "body": "Refactored the code in the files.",
+        "changedFiles": [
+          "src/a.ts",
+          "src/b.ts",
+          "src/c.ts",
+          "src/d.ts"
+        ],
+        "changedFileCount": 4,
+        "linesChanged": 300,
+        "commits": [
+          "refactor",
+          "changes",
+          "more changes"
+        ]
+      }
+    },
+    {
+      "id": "pr-slop-03",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Summary-of-changes boilerplate with no motivation.",
+      "pr": {
+        "title": "Add new functionality",
+        "body": "## Summary of changes\n\nThis change adds new functionality to the application. The following files were modified to implement the feature. Key changes include updates to the relevant modules.",
+        "changedFiles": [
+          "src/feature.ts"
+        ],
+        "changedFileCount": 1,
+        "linesChanged": 80,
+        "commits": [
+          "add feature",
+          "update"
+        ]
+      }
+    },
+    {
+      "id": "pr-slop-04",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Empty-ish body, generic commits.",
+      "pr": {
+        "title": "Fixes",
+        "body": "Various fixes and improvements.",
+        "changedFiles": [
+          "src/x.ts",
+          "src/y.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 120,
+        "commits": [
+          "fixes",
+          "minor fixes",
+          "cleanup"
+        ]
+      }
+    },
+    {
+      "id": "pr-genuine-01",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Why + testing + risk + linked issue.",
+      "pr": {
+        "title": "Fix race condition in token refresh (#482)",
+        "body": "## Why\nTwo concurrent requests can both trigger a token refresh; the second invalidates the first and logs the user out. Root cause: no mutual exclusion around refresh.\n\n## What\nSerialize refreshes behind a single in-flight promise so concurrent callers await the same result.\n\n## Testing\nAdded a unit test firing 10 concurrent calls asserting exactly one network refresh. Verified manually against staging.\n\n## Risk\nLow; lock is per-session. Follow-up needed for multi-tab coordination.",
+        "changedFiles": [
+          "src/auth/token.ts",
+          "tests/auth/token.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 90,
+        "commits": [
+          "Serialize token refresh behind a single in-flight promise",
+          "Add concurrency test for token refresh"
+        ]
+      }
+    },
+    {
+      "id": "pr-genuine-02",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Concise but explains motivation and trade-off.",
+      "pr": {
+        "title": "Cache template parse results to cut p95 latency",
+        "body": "Parsing issue-form YAML on every request showed up as 40% of p95 latency in profiling. This memoizes parsed templates keyed by content hash. Trade-off: a small unbounded cache; acceptable because the key space is the number of templates per repo (single digits). Verified with the existing template tests plus a new cache-hit assertion.",
+        "changedFiles": [
+          "src/adapters/github/templates.ts"
+        ],
+        "changedFileCount": 1,
+        "linesChanged": 60,
+        "commits": [
+          "Memoize parsed templates by content hash"
+        ]
+      }
+    },
+    {
+      "id": "pr-genuine-03",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Bug fix with repro and root cause.",
+      "pr": {
+        "title": "Prevent crash on issues with null body",
+        "body": "Reported in #1203: the scorer threw when `issue.body` was null (GitHub returns null, not empty string, for bodyless issues). Root cause was an unguarded `.length`. Added a null-coalesce at the boundary and a regression test reproducing the null-body payload.",
+        "changedFiles": [
+          "src/core/heuristics/extractor.ts",
+          "tests/core/heuristics.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 25,
+        "commits": [
+          "Guard against null issue body in extractor"
+        ]
+      }
+    },
+    {
+      "id": "pr-border-01",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Borderline: short but has a concrete why. Should NOT be slop.",
+      "pr": {
+        "title": "Bump request timeout to 25s",
+        "body": "The default 10s timeout was tripping on cold-start Lambdas behind the gateway. 25s keeps us under the 30s gateway limit while covering observed cold starts.",
+        "changedFiles": [
+          "src/config.ts"
+        ],
+        "changedFileCount": 1,
+        "linesChanged": 2,
+        "commits": [
+          "Bump request timeout to 25s for cold starts"
+        ]
+      }
+    },
+    {
+      "id": "pr-border-02",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Borderline: sounds structured but is pure restatement.",
+      "pr": {
+        "title": "Improve error handling",
+        "body": "This PR improves error handling. Changes made:\n- Updated error handling in the service\n- Modified the controller to handle errors\n- Improved error messages",
+        "changedFiles": [
+          "src/service.ts",
+          "src/controller.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 70,
+        "commits": [
+          "improve error handling",
+          "update"
+        ]
+      }
+    },
+    {
+      "id": "comments-slop-01",
+      "kind": "comments",
+      "isSlop": true,
+      "note": "Every comment restates the code.",
+      "source": "function getUser(id) {\n  // increment the counter\n  counter++;\n  // loop over the users\n  for (const user of users) {\n    // check if the id matches\n    if (user.id === id) {\n      // return the user\n      return user;\n    }\n  }\n  // return null\n  return null;\n}"
+    },
+    {
+      "id": "comments-slop-02",
+      "kind": "comments",
+      "isSlop": true,
+      "note": "Generic AI docstrings with no specifics.",
+      "source": "// This function handles the data and returns the result\nfunction process(data) {\n  // This method manages the processing\n  return transform(data);\n}\n// This class represents the manager\nclass Manager {}"
+    },
+    {
+      "id": "comments-genuine-01",
+      "kind": "comments",
+      "isSlop": false,
+      "note": "Comments explain WHY and reference constraints.",
+      "source": "async function refresh() {\n  // Serialize refreshes: two concurrent callers would otherwise each mint a\n  // new token and invalidate the other, logging the user out (see #482).\n  if (inFlight) return inFlight;\n  // 25s keeps us under the 30s API gateway timeout\n  inFlight = withTimeout(doRefresh(), 25_000);\n  return inFlight;\n}"
+    },
+    {
+      "id": "comments-genuine-02",
+      "kind": "comments",
+      "isSlop": false,
+      "note": "Edge-case and rationale comments.",
+      "source": "function clamp(n, lo, hi) {\n  // ranges are inclusive here to match the spec's [lo, hi] notation\n  if (n < lo) return lo;\n  // guard against NaN: NaN comparisons are always false, so handle explicitly\n  if (Number.isNaN(n)) return lo;\n  return Math.min(n, hi);\n}"
+    },
+    {
+      "id": "gen-slop-pr-0",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 0",
+        "body": "This PR introduces the following changes:\n\n- Updated `userService.ts`\n- Modified `authController.ts`\n\nThese changes improve the codebase and enhance maintainability.",
+        "changedFiles": [
+          "src/a0.ts",
+          "src/b0.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 80,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-1",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 1",
+        "body": "## Summary of changes\n\nThis change adds new functionality to the application. The following files were modified to implement the feature. Key changes include updates to the relevant modules.",
+        "changedFiles": [
+          "src/a1.ts",
+          "src/b1.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 81,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-2",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 2",
+        "body": "Various fixes and improvements across the codebase.",
+        "changedFiles": [
+          "src/a2.ts",
+          "src/b2.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 82,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-3",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 3",
+        "body": "Refactored the code in the changed files.",
+        "changedFiles": [
+          "src/a3.ts",
+          "src/b3.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 83,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-4",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 4",
+        "body": "This PR introduces the following changes:\n\n- Updated `userService.ts`\n- Modified `authController.ts`\n\nThese changes improve the codebase and enhance maintainability.",
+        "changedFiles": [
+          "src/a4.ts",
+          "src/b4.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 84,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-5",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 5",
+        "body": "## Summary of changes\n\nThis change adds new functionality to the application. The following files were modified to implement the feature. Key changes include updates to the relevant modules.",
+        "changedFiles": [
+          "src/a5.ts",
+          "src/b5.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 85,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-6",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 6",
+        "body": "Various fixes and improvements across the codebase.",
+        "changedFiles": [
+          "src/a6.ts",
+          "src/b6.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 86,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-7",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 7",
+        "body": "Refactored the code in the changed files.",
+        "changedFiles": [
+          "src/a7.ts",
+          "src/b7.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 87,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-8",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 8",
+        "body": "This PR introduces the following changes:\n\n- Updated `userService.ts`\n- Modified `authController.ts`\n\nThese changes improve the codebase and enhance maintainability.",
+        "changedFiles": [
+          "src/a8.ts",
+          "src/b8.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 88,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-9",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 9",
+        "body": "## Summary of changes\n\nThis change adds new functionality to the application. The following files were modified to implement the feature. Key changes include updates to the relevant modules.",
+        "changedFiles": [
+          "src/a9.ts",
+          "src/b9.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 89,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-10",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 10",
+        "body": "Various fixes and improvements across the codebase.",
+        "changedFiles": [
+          "src/a10.ts",
+          "src/b10.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 90,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-11",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 11",
+        "body": "Refactored the code in the changed files.",
+        "changedFiles": [
+          "src/a11.ts",
+          "src/b11.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 91,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-12",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 12",
+        "body": "This PR introduces the following changes:\n\n- Updated `userService.ts`\n- Modified `authController.ts`\n\nThese changes improve the codebase and enhance maintainability.",
+        "changedFiles": [
+          "src/a12.ts",
+          "src/b12.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 92,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-13",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 13",
+        "body": "## Summary of changes\n\nThis change adds new functionality to the application. The following files were modified to implement the feature. Key changes include updates to the relevant modules.",
+        "changedFiles": [
+          "src/a13.ts",
+          "src/b13.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 93,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-14",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 14",
+        "body": "Various fixes and improvements across the codebase.",
+        "changedFiles": [
+          "src/a14.ts",
+          "src/b14.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 94,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-15",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 15",
+        "body": "Refactored the code in the changed files.",
+        "changedFiles": [
+          "src/a15.ts",
+          "src/b15.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 95,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-16",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 16",
+        "body": "This PR introduces the following changes:\n\n- Updated `userService.ts`\n- Modified `authController.ts`\n\nThese changes improve the codebase and enhance maintainability.",
+        "changedFiles": [
+          "src/a16.ts",
+          "src/b16.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 96,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-17",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 17",
+        "body": "## Summary of changes\n\nThis change adds new functionality to the application. The following files were modified to implement the feature. Key changes include updates to the relevant modules.",
+        "changedFiles": [
+          "src/a17.ts",
+          "src/b17.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 97,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-18",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 18",
+        "body": "Various fixes and improvements across the codebase.",
+        "changedFiles": [
+          "src/a18.ts",
+          "src/b18.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 98,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-19",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 19",
+        "body": "Refactored the code in the changed files.",
+        "changedFiles": [
+          "src/a19.ts",
+          "src/b19.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 99,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-20",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 20",
+        "body": "This PR introduces the following changes:\n\n- Updated `userService.ts`\n- Modified `authController.ts`\n\nThese changes improve the codebase and enhance maintainability.",
+        "changedFiles": [
+          "src/a20.ts",
+          "src/b20.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 100,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-21",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 21",
+        "body": "## Summary of changes\n\nThis change adds new functionality to the application. The following files were modified to implement the feature. Key changes include updates to the relevant modules.",
+        "changedFiles": [
+          "src/a21.ts",
+          "src/b21.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 101,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-22",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 22",
+        "body": "Various fixes and improvements across the codebase.",
+        "changedFiles": [
+          "src/a22.ts",
+          "src/b22.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 102,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-23",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 23",
+        "body": "Refactored the code in the changed files.",
+        "changedFiles": [
+          "src/a23.ts",
+          "src/b23.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 103,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-24",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 24",
+        "body": "This PR introduces the following changes:\n\n- Updated `userService.ts`\n- Modified `authController.ts`\n\nThese changes improve the codebase and enhance maintainability.",
+        "changedFiles": [
+          "src/a24.ts",
+          "src/b24.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 104,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-25",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 25",
+        "body": "## Summary of changes\n\nThis change adds new functionality to the application. The following files were modified to implement the feature. Key changes include updates to the relevant modules.",
+        "changedFiles": [
+          "src/a25.ts",
+          "src/b25.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 105,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-26",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 26",
+        "body": "Various fixes and improvements across the codebase.",
+        "changedFiles": [
+          "src/a26.ts",
+          "src/b26.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 106,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-27",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 27",
+        "body": "Refactored the code in the changed files.",
+        "changedFiles": [
+          "src/a27.ts",
+          "src/b27.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 107,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-28",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 28",
+        "body": "This PR introduces the following changes:\n\n- Updated `userService.ts`\n- Modified `authController.ts`\n\nThese changes improve the codebase and enhance maintainability.",
+        "changedFiles": [
+          "src/a28.ts",
+          "src/b28.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 108,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-29",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 29",
+        "body": "## Summary of changes\n\nThis change adds new functionality to the application. The following files were modified to implement the feature. Key changes include updates to the relevant modules.",
+        "changedFiles": [
+          "src/a29.ts",
+          "src/b29.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 109,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-30",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 30",
+        "body": "Various fixes and improvements across the codebase.",
+        "changedFiles": [
+          "src/a30.ts",
+          "src/b30.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 110,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-31",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 31",
+        "body": "Refactored the code in the changed files.",
+        "changedFiles": [
+          "src/a31.ts",
+          "src/b31.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 111,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-32",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 32",
+        "body": "This PR introduces the following changes:\n\n- Updated `userService.ts`\n- Modified `authController.ts`\n\nThese changes improve the codebase and enhance maintainability.",
+        "changedFiles": [
+          "src/a32.ts",
+          "src/b32.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 112,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-33",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 33",
+        "body": "## Summary of changes\n\nThis change adds new functionality to the application. The following files were modified to implement the feature. Key changes include updates to the relevant modules.",
+        "changedFiles": [
+          "src/a33.ts",
+          "src/b33.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 113,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-slop-pr-34",
+      "kind": "pr",
+      "isSlop": true,
+      "note": "Generated slop template",
+      "pr": {
+        "title": "Update batch 34",
+        "body": "Various fixes and improvements across the codebase.",
+        "changedFiles": [
+          "src/a34.ts",
+          "src/b34.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 114,
+        "commits": [
+          "update",
+          "fix",
+          "wip"
+        ]
+      }
+    },
+    {
+      "id": "gen-good-pr-0",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 0 (#1000)",
+        "body": "## Why\nFixes a race when two tabs refresh tokens concurrently (fixes #482).\n\n## Testing\nUnit test with 10 parallel callers; manual staging check.\n\n## Risk\nLow; per-session lock only. Follow-up: multi-tab coordination.",
+        "changedFiles": [
+          "src/feature0.ts",
+          "tests/feature0.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 40,
+        "commits": [
+          "Describe change 0 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-1",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 1 (#1001)",
+        "body": "Profiling showed YAML parsing at 40% of p95. Memoize by content hash; trade-off is small unbounded cache per repo. Verified with existing template tests plus cache-hit assertion. Refs #901.",
+        "changedFiles": [
+          "src/feature1.ts",
+          "tests/feature1.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 41,
+        "commits": [
+          "Describe change 1 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-2",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 2 (#1002)",
+        "body": "Fixes #1203: null `issue.body` crashed the scorer. Root cause: unguarded `.length`. Added null-coalesce + regression test reproducing the webhook payload.",
+        "changedFiles": [
+          "src/feature2.ts",
+          "tests/feature2.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 42,
+        "commits": [
+          "Describe change 2 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-3",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 3 (#1003)",
+        "body": "## Why\nFixes a race when two tabs refresh tokens concurrently (fixes #482).\n\n## Testing\nUnit test with 10 parallel callers; manual staging check.\n\n## Risk\nLow; per-session lock only. Follow-up: multi-tab coordination.",
+        "changedFiles": [
+          "src/feature3.ts",
+          "tests/feature3.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 43,
+        "commits": [
+          "Describe change 3 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-4",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 4 (#1004)",
+        "body": "Profiling showed YAML parsing at 40% of p95. Memoize by content hash; trade-off is small unbounded cache per repo. Verified with existing template tests plus cache-hit assertion. Refs #901.",
+        "changedFiles": [
+          "src/feature4.ts",
+          "tests/feature4.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 44,
+        "commits": [
+          "Describe change 4 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-5",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 5 (#1005)",
+        "body": "Fixes #1203: null `issue.body` crashed the scorer. Root cause: unguarded `.length`. Added null-coalesce + regression test reproducing the webhook payload.",
+        "changedFiles": [
+          "src/feature5.ts",
+          "tests/feature5.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 45,
+        "commits": [
+          "Describe change 5 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-6",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 6 (#1006)",
+        "body": "## Why\nFixes a race when two tabs refresh tokens concurrently (fixes #482).\n\n## Testing\nUnit test with 10 parallel callers; manual staging check.\n\n## Risk\nLow; per-session lock only. Follow-up: multi-tab coordination.",
+        "changedFiles": [
+          "src/feature6.ts",
+          "tests/feature6.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 46,
+        "commits": [
+          "Describe change 6 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-7",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 7 (#1007)",
+        "body": "Profiling showed YAML parsing at 40% of p95. Memoize by content hash; trade-off is small unbounded cache per repo. Verified with existing template tests plus cache-hit assertion. Refs #901.",
+        "changedFiles": [
+          "src/feature7.ts",
+          "tests/feature7.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 47,
+        "commits": [
+          "Describe change 7 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-8",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 8 (#1008)",
+        "body": "Fixes #1203: null `issue.body` crashed the scorer. Root cause: unguarded `.length`. Added null-coalesce + regression test reproducing the webhook payload.",
+        "changedFiles": [
+          "src/feature8.ts",
+          "tests/feature8.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 48,
+        "commits": [
+          "Describe change 8 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-9",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 9 (#1009)",
+        "body": "## Why\nFixes a race when two tabs refresh tokens concurrently (fixes #482).\n\n## Testing\nUnit test with 10 parallel callers; manual staging check.\n\n## Risk\nLow; per-session lock only. Follow-up: multi-tab coordination.",
+        "changedFiles": [
+          "src/feature9.ts",
+          "tests/feature9.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 49,
+        "commits": [
+          "Describe change 9 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-10",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 10 (#1010)",
+        "body": "Profiling showed YAML parsing at 40% of p95. Memoize by content hash; trade-off is small unbounded cache per repo. Verified with existing template tests plus cache-hit assertion. Refs #901.",
+        "changedFiles": [
+          "src/feature10.ts",
+          "tests/feature10.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 50,
+        "commits": [
+          "Describe change 10 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-11",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 11 (#1011)",
+        "body": "Fixes #1203: null `issue.body` crashed the scorer. Root cause: unguarded `.length`. Added null-coalesce + regression test reproducing the webhook payload.",
+        "changedFiles": [
+          "src/feature11.ts",
+          "tests/feature11.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 51,
+        "commits": [
+          "Describe change 11 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-12",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 12 (#1012)",
+        "body": "## Why\nFixes a race when two tabs refresh tokens concurrently (fixes #482).\n\n## Testing\nUnit test with 10 parallel callers; manual staging check.\n\n## Risk\nLow; per-session lock only. Follow-up: multi-tab coordination.",
+        "changedFiles": [
+          "src/feature12.ts",
+          "tests/feature12.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 52,
+        "commits": [
+          "Describe change 12 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-13",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 13 (#1013)",
+        "body": "Profiling showed YAML parsing at 40% of p95. Memoize by content hash; trade-off is small unbounded cache per repo. Verified with existing template tests plus cache-hit assertion. Refs #901.",
+        "changedFiles": [
+          "src/feature13.ts",
+          "tests/feature13.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 53,
+        "commits": [
+          "Describe change 13 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-14",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 14 (#1014)",
+        "body": "Fixes #1203: null `issue.body` crashed the scorer. Root cause: unguarded `.length`. Added null-coalesce + regression test reproducing the webhook payload.",
+        "changedFiles": [
+          "src/feature14.ts",
+          "tests/feature14.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 54,
+        "commits": [
+          "Describe change 14 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-15",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 15 (#1015)",
+        "body": "## Why\nFixes a race when two tabs refresh tokens concurrently (fixes #482).\n\n## Testing\nUnit test with 10 parallel callers; manual staging check.\n\n## Risk\nLow; per-session lock only. Follow-up: multi-tab coordination.",
+        "changedFiles": [
+          "src/feature15.ts",
+          "tests/feature15.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 55,
+        "commits": [
+          "Describe change 15 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-16",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 16 (#1016)",
+        "body": "Profiling showed YAML parsing at 40% of p95. Memoize by content hash; trade-off is small unbounded cache per repo. Verified with existing template tests plus cache-hit assertion. Refs #901.",
+        "changedFiles": [
+          "src/feature16.ts",
+          "tests/feature16.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 56,
+        "commits": [
+          "Describe change 16 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-17",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 17 (#1017)",
+        "body": "Fixes #1203: null `issue.body` crashed the scorer. Root cause: unguarded `.length`. Added null-coalesce + regression test reproducing the webhook payload.",
+        "changedFiles": [
+          "src/feature17.ts",
+          "tests/feature17.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 57,
+        "commits": [
+          "Describe change 17 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-18",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 18 (#1018)",
+        "body": "## Why\nFixes a race when two tabs refresh tokens concurrently (fixes #482).\n\n## Testing\nUnit test with 10 parallel callers; manual staging check.\n\n## Risk\nLow; per-session lock only. Follow-up: multi-tab coordination.",
+        "changedFiles": [
+          "src/feature18.ts",
+          "tests/feature18.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 58,
+        "commits": [
+          "Describe change 18 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-19",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 19 (#1019)",
+        "body": "Profiling showed YAML parsing at 40% of p95. Memoize by content hash; trade-off is small unbounded cache per repo. Verified with existing template tests plus cache-hit assertion. Refs #901.",
+        "changedFiles": [
+          "src/feature19.ts",
+          "tests/feature19.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 59,
+        "commits": [
+          "Describe change 19 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-20",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 20 (#1020)",
+        "body": "Fixes #1203: null `issue.body` crashed the scorer. Root cause: unguarded `.length`. Added null-coalesce + regression test reproducing the webhook payload.",
+        "changedFiles": [
+          "src/feature20.ts",
+          "tests/feature20.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 60,
+        "commits": [
+          "Describe change 20 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-21",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 21 (#1021)",
+        "body": "## Why\nFixes a race when two tabs refresh tokens concurrently (fixes #482).\n\n## Testing\nUnit test with 10 parallel callers; manual staging check.\n\n## Risk\nLow; per-session lock only. Follow-up: multi-tab coordination.",
+        "changedFiles": [
+          "src/feature21.ts",
+          "tests/feature21.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 61,
+        "commits": [
+          "Describe change 21 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-22",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 22 (#1022)",
+        "body": "Profiling showed YAML parsing at 40% of p95. Memoize by content hash; trade-off is small unbounded cache per repo. Verified with existing template tests plus cache-hit assertion. Refs #901.",
+        "changedFiles": [
+          "src/feature22.ts",
+          "tests/feature22.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 62,
+        "commits": [
+          "Describe change 22 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-23",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 23 (#1023)",
+        "body": "Fixes #1203: null `issue.body` crashed the scorer. Root cause: unguarded `.length`. Added null-coalesce + regression test reproducing the webhook payload.",
+        "changedFiles": [
+          "src/feature23.ts",
+          "tests/feature23.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 63,
+        "commits": [
+          "Describe change 23 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-good-pr-24",
+      "kind": "pr",
+      "isSlop": false,
+      "note": "Generated genuine template",
+      "pr": {
+        "title": "Meaningful change 24 (#1024)",
+        "body": "## Why\nFixes a race when two tabs refresh tokens concurrently (fixes #482).\n\n## Testing\nUnit test with 10 parallel callers; manual staging check.\n\n## Risk\nLow; per-session lock only. Follow-up: multi-tab coordination.",
+        "changedFiles": [
+          "src/feature24.ts",
+          "tests/feature24.test.ts"
+        ],
+        "changedFileCount": 2,
+        "linesChanged": 64,
+        "commits": [
+          "Describe change 24 with context"
+        ],
+        "hasTestFileChanges": true
+      }
+    },
+    {
+      "id": "gen-comments-slop-0",
+      "kind": "comments",
+      "isSlop": true,
+      "note": "Generated restating comments",
+      "source": "function f0() {\n  // increment\n  x++;\n  // return x\n  return x;\n}"
+    },
+    {
+      "id": "gen-comments-slop-1",
+      "kind": "comments",
+      "isSlop": true,
+      "note": "Generated restating comments",
+      "source": "function f1() {\n  // increment\n  x++;\n  // return x\n  return x;\n}"
+    },
+    {
+      "id": "gen-comments-slop-2",
+      "kind": "comments",
+      "isSlop": true,
+      "note": "Generated restating comments",
+      "source": "function f2() {\n  // increment\n  x++;\n  // return x\n  return x;\n}"
+    },
+    {
+      "id": "gen-comments-slop-3",
+      "kind": "comments",
+      "isSlop": true,
+      "note": "Generated restating comments",
+      "source": "function f3() {\n  // increment\n  x++;\n  // return x\n  return x;\n}"
+    },
+    {
+      "id": "gen-comments-slop-4",
+      "kind": "comments",
+      "isSlop": true,
+      "note": "Generated restating comments",
+      "source": "function f4() {\n  // increment\n  x++;\n  // return x\n  return x;\n}"
+    },
+    {
+      "id": "gen-comments-slop-5",
+      "kind": "comments",
+      "isSlop": true,
+      "note": "Generated restating comments",
+      "source": "function f5() {\n  // increment\n  x++;\n  // return x\n  return x;\n}"
+    },
+    {
+      "id": "gen-comments-slop-6",
+      "kind": "comments",
+      "isSlop": true,
+      "note": "Generated restating comments",
+      "source": "function f6() {\n  // increment\n  x++;\n  // return x\n  return x;\n}"
+    },
+    {
+      "id": "gen-comments-slop-7",
+      "kind": "comments",
+      "isSlop": true,
+      "note": "Generated restating comments",
+      "source": "function f7() {\n  // increment\n  x++;\n  // return x\n  return x;\n}"
+    },
+    {
+      "id": "gen-comments-good-0",
+      "kind": "comments",
+      "isSlop": false,
+      "note": "Generated why-comments",
+      "source": "// Workaround for #0: upstream API returns 409 on retry\nfunction g0() { return 1; }"
+    },
+    {
+      "id": "gen-comments-good-1",
+      "kind": "comments",
+      "isSlop": false,
+      "note": "Generated why-comments",
+      "source": "// Workaround for #1: upstream API returns 409 on retry\nfunction g1() { return 1; }"
+    },
+    {
+      "id": "gen-comments-good-2",
+      "kind": "comments",
+      "isSlop": false,
+      "note": "Generated why-comments",
+      "source": "// Workaround for #2: upstream API returns 409 on retry\nfunction g2() { return 1; }"
+    },
+    {
+      "id": "gen-comments-good-3",
+      "kind": "comments",
+      "isSlop": false,
+      "note": "Generated why-comments",
+      "source": "// Workaround for #3: upstream API returns 409 on retry\nfunction g3() { return 1; }"
+    },
+    {
+      "id": "gen-comments-good-4",
+      "kind": "comments",
+      "isSlop": false,
+      "note": "Generated why-comments",
+      "source": "// Workaround for #4: upstream API returns 409 on retry\nfunction g4() { return 1; }"
+    },
+    {
+      "id": "gen-comments-good-5",
+      "kind": "comments",
+      "isSlop": false,
+      "note": "Generated why-comments",
+      "source": "// Workaround for #5: upstream API returns 409 on retry\nfunction g5() { return 1; }"
+    }
+  ]
+}
